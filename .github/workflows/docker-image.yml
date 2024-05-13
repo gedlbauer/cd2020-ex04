@@ -18,12 +18,9 @@ jobs:
       run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u ${{ secrets.REGISTRY_USER }} --password-stdin
     - name: Build the Docker image
       run: docker build . --tag gedlbauer/my-firstimage:latest
-    - name: Tag image with GIT Sha
+    - name: Push the Docker image
       run: |
         GIT_SHA="$(git rev-parse --short HEAD)"
         docker tag gedlbauer/my-firstimage:latest gedlbauer/my-firstimage:$GIT_SHA
-    - name: Push the Docker image
-      run: |
         docker push gedlbauer/my-firstimage:latest
-        docker push gedlbauer/my-firstimage:$GIT_SHA
-        
+        docker push gedlbauer/my-firstimage:$GIT_SHA        
