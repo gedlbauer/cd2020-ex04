@@ -31,18 +31,39 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-  deploy:
+
+  build_image:
     runs-on: ubuntu-latest
     needs: [test, sonarcloud]
     steps:
     - uses: actions/checkout@v4
+    - name: Build the Docker image
+      run: docker build . --tag gedlbauer/my-firstimage:local
+    - name: Save the Docker image
+      run: docker save -o my-firstimage.tar gedlbauer/my-firstimage:local
+    - name: Upload image as artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: local-image
+        path: my-firstimage.tar
+  deploy:
+    runs-on: ubuntu-latest
+    needs: build_image
+    steps:
+    - uses: actions/checkout@v4
     - name: Authorize to Docker Hub
       run: echo ${{ secrets.REGISTRY_PASSWORD }} | docker login -u gedlbauer --password-stdin
-    - name: Build the Docker image
-      run: docker build . --tag gedlbauer/my-firstimage:latest
+    - name: Download image from artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: local-image
+        path: /tmp
+    - name: Load image from tarball
+      run: docker image load /tmp/my-firstimage.tar
     - name: Push the Docker image
       run: |
         GIT_SHA="$(git rev-parse --short HEAD)"
-        docker tag gedlbauer/my-firstimage:latest gedlbauer/my-firstimage:$GIT_SHA
+        docker tag gedlbauer/my-firstimage:local gedlbauer/my-firstimage:latest
+        docker tag gedlbauer/my-firstimage:local gedlbauer/my-firstimage:$GIT_SHA
         docker push gedlbauer/my-firstimage:latest
         docker push gedlbauer/my-firstimage:$GIT_SHA        
