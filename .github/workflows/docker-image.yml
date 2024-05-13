@@ -21,7 +21,7 @@ jobs:
         GIT_SHA="$(git rev-parse --short HEAD)"
         docker tag gedlbauer/my-firstimage:latest gedlbauer/my-firstimage:$GIT_SHA
     - name: Authorize to Docker Hub
-      run: docker login --username $REGISTRY_USER --password $REGISTRY_PASSWORD
+      run: docker login -u $REGISTRY_USER -p $REGISTRY_PASSWORD
     - name: Push the Docker image
       run: |
         docker push gedlbauer/my-firstimage:latest
