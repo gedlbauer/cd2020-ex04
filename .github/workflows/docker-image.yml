@@ -59,7 +59,7 @@ jobs:
         name: local-image
         path: /tmp
     - name: Load image from tarball
-      run: docker image load /tmp/my-firstimage.tar
+      run: docker image load --input /tmp/my-firstimage.tar
     - name: Push the Docker image
       run: |
         GIT_SHA="$(git rev-parse --short HEAD)"
