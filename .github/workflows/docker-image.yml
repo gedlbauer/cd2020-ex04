@@ -7,11 +7,20 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  test:
+    name: Test Code
     runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
 
+    - name: Set up Go
+      uses: actions/setup-go@v3
+      with:
+        go-version: 1.20
+    - name: Test
+      run: go test -v ./...
+  deploy:
+    runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
     - name: Authorize to Docker Hub
