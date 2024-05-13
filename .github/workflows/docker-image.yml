@@ -15,7 +15,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Authorize to Docker Hub
-      run: echo $REGISTRY_PASSWORD | docker login -u $REGISTRY_USER --password-stdin
+      run: echo $secrets.REGISTRY_PASSWORD | docker login -u $REGISTRY_USER --password-stdin
     - name: Build the Docker image
       run: docker build . --tag gedlbauer/my-firstimage:latest
     - name: Tag image with GIT Sha
